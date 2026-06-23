@@ -23,7 +23,7 @@ const C = {
 const FONT = "https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap";
 
 const TEAMS = ["All", "8U", "10U", "12U", "14U"];
-const COACH_PW = "belles2025";
+const COACH_PW = "2026Belles";
 const STORAGE_KEY = "belles_tryout_v2";
 const LOG_KEY     = "belles_coach_log_v2";   // { [playerId]: [{date,coach,action,note}] }
 const STATUS_KEY  = "belles_status_v2";       // { [playerId]: statusString }
@@ -111,9 +111,7 @@ function Login({ onAuth }) {
             fontWeight:800, fontSize:18, letterSpacing:1, cursor:"pointer" }}>
           Enter Portal
         </button>
-        <p style={{ color:C.muted, fontSize:12, marginTop:16 }}>
-          Default: <strong style={{ color:C.mint }}>belles2025</strong>
-        </p>
+
       </div>
     </div>
   );
