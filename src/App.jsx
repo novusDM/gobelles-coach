@@ -89,7 +89,7 @@ function Login({ onAuth }) {
         borderRadius:12, padding:"40px 36px", width:"100%", maxWidth:380, textAlign:"center" }}>
         <img src={LOGO} alt="Texas Belles" style={{ height:56, marginBottom:20, filter:"drop-shadow(0 0 12px #00ffbb44)" }} />
         <p style={{ fontFamily:"Barlow Condensed", fontSize:12, fontWeight:700, letterSpacing:4, color:C.mint, textTransform:"uppercase", marginBottom:4 }}>Coach Portal</p>
-        <h1 style={{ fontFamily:"Barlow Condensed", fontWeight:900, fontSize:28, color:C.white, margin:"0 0 28px" }}>Fall 2025 Tryouts</h1>
+        <h1 style={{ fontFamily:"Barlow Condensed", fontWeight:900, fontSize:28, color:C.white, margin:"0 0 28px" }}>Fall 2026 Tryouts</h1>
         <input type="password" value={pw} onChange={e => setPw(e.target.value)}
           onKeyDown={e => e.key === "Enter" && check()}
           placeholder="Coach password"
@@ -256,10 +256,12 @@ function InfoTab({ player }) {
     ["Phone",    player.phone],
     ["Email",    player.email],
     ["Age",      player.player_age],
+    ["DOB",      player.dob||"—"],
     ["Team",     player.team_interest],
     ["School",   player.school||"—"],
     ["Grad Year",player.grad_year||"—"],
     ["Position", player.position||"—"],
+    ["2nd Position", player.position2||"—"],
     ["Prev Team 1", player.prev_team1||"—"],
     ["Prev Team 2", player.prev_team2||"—"],
     ["Submitted",player.submitted_at ? new Date(player.submitted_at).toLocaleDateString() : "—"],
