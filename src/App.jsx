@@ -632,14 +632,6 @@ function Portal() {
             })}
           </div>
 
-          <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:20 }}>
-            {STATUSES.map(s => (
-              <span key={s.label} style={{ background:s.bg, border:`1px solid ${s.color}44`,
-                color:s.color, borderRadius:5, padding:"5px 14px",
-                fontFamily:"Orbitron", fontWeight:700, fontSize:12, letterSpacing:1 }}>{s.label}</span>
-            ))}
-          </div>
-
           {loading ? (
             <p style={{ fontFamily:"JetBrains Mono", color:C.muted, padding:"40px 0", textAlign:"center" }}>Loading registrations...</p>
           ) : sorted.length === 0 ? (
