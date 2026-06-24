@@ -118,6 +118,36 @@ async function fetchAndCacheEligibility(player, onUpdate) {
   }
 }
 
+
+const TEAM_COLORS = {
+  "8U":  { bg:"#f59e0b", border:"#f59e0b" },  // amber
+  "10U": { bg:"#3b82f6", border:"#3b82f6" },  // blue
+  "12U": { bg:"#a855f7", border:"#a855f7" },  // purple
+  "14U": { bg:"#ef4444", border:"#ef4444" },  // red
+};
+
+function TeamBadge({ team, style={} }) {
+  const tc = TEAM_COLORS[team] || { bg:C.muted, border:C.muted };
+  return (
+    <span style={{
+      background:tc.bg, border:`1px solid ${tc.border}`,
+      borderRadius:4, padding:"3px 11px",
+      fontFamily:"Barlow Condensed", fontWeight:800, fontSize:15,
+      color:"#000", letterSpacing:1, ...style
+    }}>{team}</span>
+  );
+}
+
+function formatDOBShort(dob) {
+  if (!dob) return null;
+  try {
+    const d = new Date(dob);
+    const local = new Date(d.getTime() + d.getTimezoneOffset() * 60000);
+    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    return `${months[local.getMonth()]}-${local.getFullYear()}`;
+  } catch { return null; }
+}
+
 function statusStyle(label) {
   const s = STATUSES.find(x => x.label===label) || STATUSES[0];
   return { color:s.color, background:s.bg, border:`1px solid ${s.color}44` };
@@ -143,17 +173,17 @@ function Login({ onAuth }) {
     <div style={{ minHeight:"100vh", background:C.black, display:"flex", alignItems:"center", justifyContent:"center", padding:24 }}>
       <div style={{ background:C.panel, border:`1px solid ${C.border}`, borderTop:`3px solid ${C.mint}`,
         borderRadius:12, padding:"40px 36px", width:"100%", maxWidth:380, textAlign:"center" }}>
-        <img src={LOGO} alt="Texas Belles" style={{ height:56, marginBottom:20, filter:"drop-shadow(0 0 12px #00ffbb44)" }} />
-        <p style={{ fontFamily:"Barlow Condensed", fontSize:12, fontWeight:700, letterSpacing:4, color:C.mint, textTransform:"uppercase", marginBottom:4 }}>Coach Portal</p>
-        <h1 style={{ fontFamily:"Barlow Condensed", fontWeight:900, fontSize:28, color:C.white, margin:"0 0 28px" }}>Fall 2026 Tryouts</h1>
+        <img src={LOGO} alt="Texas Belles" style={{ height:62, marginBottom:20, filter:"drop-shadow(0 0 12px #00ffbb44)" }} />
+        <p style={{ fontFamily:"Barlow Condensed", fontSize:13, fontWeight:700, letterSpacing:4, color:C.mint, textTransform:"uppercase", marginBottom:4 }}>Coach Portal</p>
+        <h1 style={{ fontFamily:"Barlow Condensed", fontWeight:900, fontSize:31, color:C.white, margin:"0 0 28px" }}>Fall 2026 Tryouts</h1>
         <input type="password" value={pw} onChange={e=>setPw(e.target.value)}
           onKeyDown={e=>e.key==="Enter"&&check()} placeholder="Coach password"
           style={{ background:C.dark, border:`1px solid ${C.border}`, borderRadius:7,
-            padding:"11px 16px", color:C.white, fontSize:15, fontFamily:"Barlow",
+            padding:"13px 18px", color:C.white, fontSize:17, fontFamily:"Barlow",
             outline:"none", width:"100%", boxSizing:"border-box", marginBottom:10 }} />
-        {err && <p style={{ color:C.red, fontSize:13, margin:"0 0 8px" }}>{err}</p>}
+        {err && <p style={{ color:C.red, fontSize:15, margin:"0 0 8px" }}>{err}</p>}
         <button onClick={check} style={{ background:C.mint, color:C.black, border:"none", borderRadius:7,
-          padding:"13px", width:"100%", fontFamily:"Barlow Condensed", fontWeight:800, fontSize:18,
+          padding:"13px", width:"100%", fontFamily:"Barlow Condensed", fontWeight:800, fontSize:20,
           letterSpacing:1, cursor:"pointer" }}>Enter Portal</button>
       </div>
     </div>
@@ -163,24 +193,24 @@ function Login({ onAuth }) {
 /* ── Shared UI ────────────────────────────────────────────────────── */
 function StatusBadge({ status }) {
   const s = statusStyle(status||"New");
-  return <span style={{ ...s, borderRadius:5, padding:"3px 10px", fontFamily:"Barlow Condensed",
-    fontWeight:700, fontSize:12, letterSpacing:1, whiteSpace:"nowrap" }}>{status||"New"}</span>;
+  return <span style={{ ...s, borderRadius:5, padding:"5px 14px", fontFamily:"Barlow Condensed",
+    fontWeight:700, fontSize:13, letterSpacing:1, whiteSpace:"nowrap" }}>{status||"New"}</span>;
 }
 
 function Tag({ color, text, children }) {
-  return <span style={{ border:`1px solid ${color}`, borderRadius:4, padding:"2px 9px",
-    fontFamily:"Barlow Condensed", fontWeight:700, fontSize:13,
+  return <span style={{ border:`1px solid ${color}`, borderRadius:4, padding:"3px 11px",
+    fontFamily:"Barlow Condensed", fontWeight:700, fontSize:15,
     color:text||color, letterSpacing:1 }}>{children}</span>;
 }
 
 function SectionHead({ children, style={} }) {
-  return <p style={{ fontFamily:"Barlow Condensed", fontSize:12, fontWeight:700,
+  return <p style={{ fontFamily:"Barlow Condensed", fontSize:13, fontWeight:700,
     letterSpacing:3, color:C.mint, textTransform:"uppercase",
     margin:"0 0 12px", paddingBottom:6, borderBottom:`1px solid ${C.border}`, ...style }}>{children}</p>;
 }
 
 const iStyle = { background:"#0d0d0d", border:`1px solid ${C.border}`, borderRadius:6,
-  padding:"10px 14px", color:C.white, fontSize:14, fontFamily:"Barlow",
+  padding:"12px 16px", color:C.white, fontSize:16, fontFamily:"Barlow",
   outline:"none", width:"100%", boxSizing:"border-box" };
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -192,16 +222,16 @@ function PlayerCard({ player, status, logCount, onClick }) {
   return (
     <div onClick={onClick} style={{ background:C.card,
       border:`1px solid ${needsAction ? C.mint+"44" : C.border}`,
-      borderRadius:10, padding:"18px 20px", cursor:"pointer", position:"relative" }}>
+      borderRadius:10, padding:"22px 24px", cursor:"pointer", position:"relative" }}>
       {needsAction && <div style={{ position:"absolute", top:14, right:14, width:8, height:8,
         borderRadius:"50%", background:C.mint, boxShadow:`0 0 6px ${C.mint}` }} />}
 
       <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:8, marginBottom:6 }}>
         <div>
-          <h3 style={{ fontFamily:"Barlow Condensed", fontWeight:900, fontSize:20, color:C.white, margin:0, lineHeight:1 }}>
+          <h3 style={{ fontFamily:"Barlow Condensed", fontWeight:900, fontSize:"clamp(18px,4vw,22px)", color:C.white, margin:0, lineHeight:1 }}>
             {player.player_first} {player.player_last}
           </h3>
-          <p style={{ fontFamily:"Barlow", fontSize:13, color:C.muted, margin:"3px 0 0" }}>
+          <p style={{ fontFamily:"Barlow", fontSize:15, color:C.muted, margin:"3px 0 0" }}>
             {player.position||"—"}{player.school ? ` · ${player.school}` : ""}
           </p>
         </div>
@@ -209,21 +239,23 @@ function PlayerCard({ player, status, logCount, onClick }) {
       </div>
 
       <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:10, alignItems:"center" }}>
+        <TeamBadge team={player.team_interest} />
         {elig
           ? <Tag color={C.mint}>NCS {elig}</Tag>
           : player.dob
-            ? <span style={{ fontFamily:"Barlow Condensed", fontSize:12, color:C.muted, letterSpacing:1 }}>Checking eligibility...</span>
-            : <Tag color={C.dim} text={C.muted}>{player.team_interest}</Tag>
+            ? <span style={{ fontFamily:"Barlow Condensed", fontSize:13, color:C.muted, letterSpacing:1 }}>...</span>
+            : null
         }
-        {player.dob && <Tag color={C.dim} text={C.muted}>DOB {formatDOB(player.dob)}</Tag>}
-        {player.grad_year && <Tag color={C.dim} text={C.muted}>{player.grad_year}</Tag>}
+        {player.dob && formatDOBShort(player.dob) && (
+          <Tag color={C.dim} text={C.muted}>{formatDOBShort(player.dob)}</Tag>
+        )}
       </div>
 
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-        <span style={{ fontFamily:"Barlow", fontSize:13, color:C.muted }}>
+        <span style={{ fontFamily:"Barlow", fontSize:15, color:C.muted }}>
           {player.parent_first} {player.parent_last} · {player.phone}
         </span>
-        <span style={{ fontFamily:"Barlow Condensed", fontSize:12, color:C.muted, letterSpacing:1 }}>
+        <span style={{ fontFamily:"Barlow Condensed", fontSize:13, color:C.muted, letterSpacing:1 }}>
           {logCount>0 ? `${logCount} note${logCount>1?"s":""}` : "No activity"}
         </span>
       </div>
@@ -252,7 +284,7 @@ function Drawer({ player, status, log, onClose, onStatusChange, onLogAdd }) {
   return (
     <div style={{ position:"fixed", inset:0, zIndex:200, background:"#000000cc",
       display:"flex", justifyContent:"flex-end" }} onClick={onClose}>
-      <div onClick={e=>e.stopPropagation()} style={{ width:"100%", maxWidth:520,
+      <div onClick={e=>e.stopPropagation()} style={{ width:"100%", maxWidth:"min(560px, 100vw)",
         background:C.dark, borderLeft:`1px solid ${C.border}`, overflowY:"auto",
         display:"flex", flexDirection:"column" }}>
 
@@ -260,24 +292,24 @@ function Drawer({ player, status, log, onClose, onStatusChange, onLogAdd }) {
           position:"sticky", top:0, background:C.dark, zIndex:10 }}>
           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
             <div>
-              <h2 style={{ fontFamily:"Barlow Condensed", fontWeight:900, fontSize:28, color:C.white, margin:"0 0 4px" }}>
+              <h2 style={{ fontFamily:"Barlow Condensed", fontWeight:900, fontSize:"clamp(22px,5vw,31px)", color:C.white, margin:"0 0 4px" }}>
                 {player.player_first} {player.player_last}
               </h2>
               <div style={{ display:"flex", gap:8, alignItems:"center", flexWrap:"wrap" }}>
-                <span style={{ fontFamily:"Barlow", fontSize:13, color:C.muted }}>
+                <span style={{ fontFamily:"Barlow", fontSize:15, color:C.muted }}>
                   {player.position||"—"} · {player.team_interest} Team
                 </span>
                 {elig && (
                   <span style={{ background:`${C.mint}18`, border:`1px solid ${C.mint}44`,
                     color:C.mint, borderRadius:5, padding:"2px 10px",
-                    fontFamily:"Barlow Condensed", fontWeight:700, fontSize:12, letterSpacing:1 }}>
+                    fontFamily:"Barlow Condensed", fontWeight:700, fontSize:13, letterSpacing:1 }}>
                     NCS Eligible: {elig}
                   </span>
                 )}
               </div>
             </div>
             <button onClick={onClose} style={{ background:"none", border:"none",
-              color:C.muted, fontSize:22, cursor:"pointer", padding:"0 4px", lineHeight:1 }}>✕</button>
+              color:C.muted, fontSize:25, cursor:"pointer", padding:"0 4px", lineHeight:1 }}>✕</button>
           </div>
 
           <div style={{ marginTop:14, display:"flex", gap:6, flexWrap:"wrap" }}>
@@ -286,8 +318,8 @@ function Drawer({ player, status, log, onClose, onStatusChange, onLogAdd }) {
                 ...(status===s.label||(!status&&s.label==="New")
                   ? { background:s.bg, border:`1.5px solid ${s.color}`, color:s.color }
                   : { background:"none", border:`1px solid ${C.border}`, color:C.muted }),
-                borderRadius:5, padding:"4px 12px", fontFamily:"Barlow Condensed",
-                fontWeight:700, fontSize:12, letterSpacing:1, cursor:"pointer" }}>{s.label}</button>
+                borderRadius:5, padding:"5px 14px", fontFamily:"Barlow Condensed",
+                fontWeight:700, fontSize:13, letterSpacing:1, cursor:"pointer" }}>{s.label}</button>
             ))}
           </div>
 
@@ -297,8 +329,8 @@ function Drawer({ player, status, log, onClose, onStatusChange, onLogAdd }) {
                 background:"none", border:"none",
                 borderBottom:tab===k?`2px solid ${C.mint}`:"2px solid transparent",
                 color:tab===k?C.mint:C.muted,
-                fontFamily:"Barlow Condensed", fontWeight:700, fontSize:14,
-                letterSpacing:1, padding:"8px 16px 10px", cursor:"pointer", marginBottom:-1,
+                fontFamily:"Barlow Condensed", fontWeight:700, fontSize:16,
+                letterSpacing:1, padding:"10px 18px 12px", cursor:"pointer", marginBottom:-1,
               }}>{l.toUpperCase()}</button>
             ))}
           </div>
@@ -343,8 +375,8 @@ function InfoTab({ player }) {
       {rows.map(([l,v]) => (
         <div key={l} style={{ display:"flex", justifyContent:"space-between", gap:12,
           padding:"10px 0", borderBottom:`1px solid ${C.border}` }}>
-          <span style={{ fontFamily:"Barlow", fontSize:13, color:C.muted, flexShrink:0 }}>{l}</span>
-          <span style={{ fontFamily:"Barlow", fontSize:13,
+          <span style={{ fontFamily:"Barlow", fontSize:15, color:C.muted, flexShrink:0 }}>{l}</span>
+          <span style={{ fontFamily:"Barlow", fontSize:15,
             color: l==="NCS Eligible" && elig ? C.mint : C.white,
             fontWeight: l==="NCS Eligible" ? 600 : 400,
             textAlign:"right", wordBreak:"break-word" }}>{v}</span>
@@ -352,7 +384,7 @@ function InfoTab({ player }) {
       ))}
       {player.bio && <>
         <SectionHead style={{ marginTop:20 }}>Player Notes</SectionHead>
-        <p style={{ fontFamily:"Barlow", fontSize:14, color:C.white, lineHeight:1.65,
+        <p style={{ fontFamily:"Barlow", fontSize:16, color:C.white, lineHeight:1.65,
           background:C.panel, border:`1px solid ${C.border}`, borderRadius:8,
           padding:"14px 16px", margin:0 }}>{player.bio}</p>
       </>}
@@ -367,18 +399,18 @@ function FitTab({ player }) {
       <SectionHead>Parent Fit Responses</SectionHead>
       {keys.map((k,i) => (
         <div key={k} style={{ background:C.panel, border:`1px solid ${C.border}`, borderRadius:8, padding:"14px 16px" }}>
-          <p style={{ fontFamily:"Barlow Condensed", fontSize:12, fontWeight:700,
+          <p style={{ fontFamily:"Barlow Condensed", fontSize:13, fontWeight:700,
             letterSpacing:2, color:C.mint, textTransform:"uppercase", margin:"0 0 6px" }}>{Q_LABELS[i]}</p>
-          <p style={{ fontFamily:"Barlow", fontSize:14, color:player[k]?C.white:C.muted, margin:0, lineHeight:1.6 }}>
+          <p style={{ fontFamily:"Barlow", fontSize:16, color:player[k]?C.white:C.muted, margin:0, lineHeight:1.6 }}>
             {player[k]||"No answer recorded"}
           </p>
         </div>
       ))}
       {player.comments && (
         <div style={{ background:C.panel, border:`1px solid ${C.border}`, borderRadius:8, padding:"14px 16px" }}>
-          <p style={{ fontFamily:"Barlow Condensed", fontSize:12, fontWeight:700,
+          <p style={{ fontFamily:"Barlow Condensed", fontSize:13, fontWeight:700,
             letterSpacing:2, color:C.mint, textTransform:"uppercase", margin:"0 0 6px" }}>Additional Comments</p>
-          <p style={{ fontFamily:"Barlow", fontSize:14, color:C.white, margin:0, lineHeight:1.6 }}>{player.comments}</p>
+          <p style={{ fontFamily:"Barlow", fontSize:16, color:C.white, margin:0, lineHeight:1.6 }}>{player.comments}</p>
         </div>
       )}
     </div>
@@ -391,7 +423,7 @@ function ActivityTab({ log, newAction, setNewAction, newNote, setNewNote, coachN
       <SectionHead>Log an Update</SectionHead>
       {incomplete && (
         <div style={{ background:"#00ffbb10", border:`1px solid ${C.mint}44`, borderRadius:8,
-          padding:"10px 14px", marginBottom:16, fontFamily:"Barlow", fontSize:13, color:C.mint }}>
+          padding:"12px 16px", marginBottom:16, fontFamily:"Barlow", fontSize:15, color:C.mint }}>
           No activity yet — this applicant needs a first contact.
         </div>
       )}
@@ -411,27 +443,27 @@ function ActivityTab({ log, newAction, setNewAction, newNote, setNewNote, coachN
         <button onClick={onLog} disabled={!newAction} style={{
           background:newAction?C.mint:C.dim, color:newAction?C.black:C.muted,
           border:"none", borderRadius:7, padding:"11px",
-          fontFamily:"Barlow Condensed", fontWeight:800, fontSize:16,
+          fontFamily:"Barlow Condensed", fontWeight:800, fontSize:18,
           letterSpacing:1, cursor:newAction?"pointer":"not-allowed" }}>Save to Log</button>
       </div>
       <SectionHead>Activity History {log.length>0&&`(${log.length})`}</SectionHead>
       {log.length===0
-        ? <p style={{ fontFamily:"Barlow", fontSize:14, color:C.muted }}>No activity logged yet.</p>
+        ? <p style={{ fontFamily:"Barlow", fontSize:16, color:C.muted }}>No activity logged yet.</p>
         : [...log].reverse().map((e,i) => (
           <div key={i} style={{ padding:"12px 0", borderBottom:`1px solid ${C.border}`,
             display:"flex", gap:12, alignItems:"flex-start" }}>
             <div style={{ width:8, height:8, borderRadius:"50%", background:C.mint, flexShrink:0, marginTop:5 }} />
             <div style={{ flex:1 }}>
               <div style={{ display:"flex", justifyContent:"space-between", gap:8, marginBottom:2 }}>
-                <span style={{ fontFamily:"Barlow Condensed", fontWeight:700, fontSize:14, color:C.white }}>
+                <span style={{ fontFamily:"Barlow Condensed", fontWeight:700, fontSize:16, color:C.white }}>
                   {e.action==="__custom__"?e.note:e.action}
                 </span>
-                <span style={{ fontFamily:"Barlow", fontSize:12, color:C.muted, whiteSpace:"nowrap" }}>{e.log_date}</span>
+                <span style={{ fontFamily:"Barlow", fontSize:13, color:C.muted, whiteSpace:"nowrap" }}>{e.log_date}</span>
               </div>
               <div style={{ display:"flex", justifyContent:"space-between", gap:8 }}>
-                <span style={{ fontFamily:"Barlow", fontSize:12, color:C.mint }}>{e.coach}</span>
+                <span style={{ fontFamily:"Barlow", fontSize:13, color:C.mint }}>{e.coach}</span>
                 {e.action!=="__custom__"&&e.note&&
-                  <span style={{ fontFamily:"Barlow", fontSize:12, color:C.muted, textAlign:"right" }}>{e.note}</span>}
+                  <span style={{ fontFamily:"Barlow", fontSize:13, color:C.muted, textAlign:"right" }}>{e.note}</span>}
               </div>
             </div>
           </div>
@@ -526,24 +558,24 @@ function Portal() {
       <link href={FONT} rel="stylesheet" />
 
       <header style={{ background:C.dark, borderBottom:`1px solid ${C.border}`,
-        padding:"0 20px", height:56, display:"flex", alignItems:"center",
+        padding:"0 20px", height:62, display:"flex", alignItems:"center",
         justifyContent:"space-between", position:"sticky", top:0, zIndex:50 }}>
         <div style={{ display:"flex", alignItems:"center", gap:12 }}>
           <button onClick={() => setSideOpen(o => !o)} style={{ background:"none", border:"none",
-            color:C.muted, fontSize:20, cursor:"pointer", padding:"0 4px", lineHeight:1 }}>☰</button>
-          <img src={LOGO} alt="Texas Belles" style={{ height:32 }} />
-          <span style={{ fontFamily:"Barlow Condensed", fontWeight:800, fontSize:18,
+            color:C.muted, fontSize:22, cursor:"pointer", padding:"0 4px", lineHeight:1 }}>☰</button>
+          <img src={LOGO} alt="Texas Belles" style={{ height:38 }} />
+          <span style={{ fontFamily:"Barlow Condensed", fontWeight:800, fontSize:20,
             color:C.white, letterSpacing:1 }}>Coach Portal</span>
         </div>
         <div style={{ display:"flex", alignItems:"center", gap:12 }}>
           {needsAction > 0 && (
             <span style={{ background:"#00ffbb18", border:`1px solid ${C.mint}44`, color:C.mint,
-              borderRadius:5, padding:"3px 10px", fontFamily:"Barlow Condensed",
-              fontWeight:700, fontSize:12, letterSpacing:1 }}>{needsAction} need action</span>
+              borderRadius:5, padding:"5px 14px", fontFamily:"Barlow Condensed",
+              fontWeight:700, fontSize:13, letterSpacing:1 }}>{needsAction} need action</span>
           )}
           <button onClick={load} style={{ background:"none", border:`1px solid ${C.border}`,
             color:C.muted, borderRadius:6, padding:"5px 14px",
-            fontFamily:"Barlow Condensed", fontWeight:700, fontSize:13,
+            fontFamily:"Barlow Condensed", fontWeight:700, fontSize:15,
             cursor:"pointer", letterSpacing:1 }}>Refresh</button>
         </div>
       </header>
@@ -553,7 +585,7 @@ function Portal() {
           borderRight:`1px solid ${C.border}`, overflow:"hidden",
           transition:"width .2s, min-width .2s", flexShrink:0 }}>
           <div style={{ padding:"20px 0", whiteSpace:"nowrap" }}>
-            <p style={{ fontFamily:"Barlow Condensed", fontSize:11, fontWeight:700,
+            <p style={{ fontFamily:"Barlow Condensed", fontSize:12, fontWeight:700,
               letterSpacing:3, color:C.muted, textTransform:"uppercase",
               padding:"0 18px", marginBottom:8 }}>Teams</p>
             {TEAMS.map(t => {
@@ -564,30 +596,37 @@ function Portal() {
                   display:"flex", alignItems:"center", justifyContent:"space-between",
                   width:"100%", background:active?`${C.mint}14`:"none", border:"none",
                   borderLeft:active?`3px solid ${C.mint}`:"3px solid transparent",
-                  color:active?C.mint:C.muted, padding:"10px 18px",
-                  fontFamily:"Barlow Condensed", fontWeight:700, fontSize:16,
+                  color:active?C.mint:C.muted, padding:"12px 20px",
+                  fontFamily:"Barlow Condensed", fontWeight:700, fontSize:18,
                   letterSpacing:1, cursor:"pointer", textAlign:"left" }}>
                   <span>{t==="All"?"All Teams":`${t} Team`}</span>
-                  <span style={{ fontSize:12, opacity:.7 }}>{count}</span>
+                  <span style={{ fontSize:13, opacity:.7 }}>{count}</span>
                 </button>
               );
             })}
           </div>
         </aside>
 
-        <main style={{ flex:1, overflowY:"auto", padding:"20px 20px 60px" }}>
+        <main style={{ flex:1, overflowY:"auto", padding:"16px 12px 60px" }}>
           <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:20 }}>
             {TEAMS.map(t => {
               const active = activeTeam === t;
               const count  = t === "All" ? players.length : (counts[t]||0);
               return (
                 <button key={t} onClick={() => setActiveTeam(t)} style={{
-                  background:active?`${C.mint}18`:C.panel,
-                  border:`1.5px solid ${active?C.mint:C.border}`,
-                  color:active?C.mint:C.muted, borderRadius:6, padding:"7px 16px",
-                  fontFamily:"Barlow Condensed", fontWeight:700, fontSize:14,
+                  background: t==="All"
+                    ? (active ? `${C.mint}18` : C.panel)
+                    : (active ? (TEAM_COLORS[t]?.bg || C.panel) : C.panel),
+                  border: t==="All"
+                    ? `1.5px solid ${active?C.mint:C.border}`
+                    : `1.5px solid ${active ? (TEAM_COLORS[t]?.bg || C.border) : C.border}`,
+                  color: t==="All"
+                    ? (active ? C.mint : C.muted)
+                    : (active ? "#000" : C.muted),
+                  borderRadius:6, padding:"9px 18px",
+                  fontFamily:"Barlow Condensed", fontWeight:700, fontSize:16,
                   letterSpacing:1, cursor:"pointer" }}>
-                  {t==="All"?"All Teams":t} <span style={{ opacity:.6, marginLeft:4 }}>{count}</span>
+                  {t==="All"?"All Teams":t} <span style={{ opacity: active && t!=="All" ? 0.6 : 0.6, marginLeft:4 }}>{count}</span>
                 </button>
               );
             })}
@@ -596,8 +635,8 @@ function Portal() {
           <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:20 }}>
             {STATUSES.map(s => (
               <span key={s.label} style={{ background:s.bg, border:`1px solid ${s.color}44`,
-                color:s.color, borderRadius:5, padding:"3px 10px",
-                fontFamily:"Barlow Condensed", fontWeight:700, fontSize:11, letterSpacing:1 }}>{s.label}</span>
+                color:s.color, borderRadius:5, padding:"5px 14px",
+                fontFamily:"Barlow Condensed", fontWeight:700, fontSize:12, letterSpacing:1 }}>{s.label}</span>
             ))}
           </div>
 
@@ -605,13 +644,13 @@ function Portal() {
             <p style={{ fontFamily:"Barlow", color:C.muted, padding:"40px 0", textAlign:"center" }}>Loading registrations...</p>
           ) : sorted.length === 0 ? (
             <div style={{ textAlign:"center", padding:"60px 0" }}>
-              <p style={{ fontFamily:"Barlow Condensed", fontSize:24, fontWeight:700, color:C.muted }}>No registrations yet</p>
-              <p style={{ fontFamily:"Barlow", fontSize:14, color:C.dim }}>
+              <p style={{ fontFamily:"Barlow Condensed", fontSize:27, fontWeight:700, color:C.muted }}>No registrations yet</p>
+              <p style={{ fontFamily:"Barlow", fontSize:16, color:C.dim }}>
                 {activeTeam==="All"?"Share the gobelles.com signup link to start collecting applications.":`No ${activeTeam} registrations yet.`}
               </p>
             </div>
           ) : (
-            <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+            <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
               {sorted.map(p => (
                 <PlayerCard key={p.id} player={p} status={statuses[p.id]}
                   logCount={(logs[p.id]||[]).length}
