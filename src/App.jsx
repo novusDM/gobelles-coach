@@ -148,6 +148,14 @@ function formatDOBShort(dob) {
   } catch { return null; }
 }
 
+function formatPhone(raw) {
+  if (!raw) return "—";
+  const digits = raw.replace(/\D/g, "");
+  if (digits.length === 10) return `${digits.slice(0,3)}-${digits.slice(3,6)}-${digits.slice(6)}`;
+  if (digits.length === 11 && digits[0] === "1") return `${digits.slice(1,4)}-${digits.slice(4,7)}-${digits.slice(7)}`;
+  return raw; // return as-is if we can't parse it
+}
+
 function statusStyle(label) {
   const s = STATUSES.find(x => x.label===label) || STATUSES[0];
   return { color:s.color, background:s.bg, border:`1px solid ${s.color}44` };
@@ -247,13 +255,13 @@ function PlayerCard({ player, status, logCount, onClick }) {
             : null
         }
         {player.dob && formatDOBShort(player.dob) && (
-          <Tag color={C.dim} text={C.muted}>{formatDOBShort(player.dob)}</Tag>
+          <Tag color={C.dim} text={C.white}>{formatDOBShort(player.dob)}</Tag>
         )}
       </div>
 
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
         <span style={{ fontFamily:"JetBrains Mono", fontSize:15, color:C.muted }}>
-          {player.parent_first} {player.parent_last} · {player.phone}
+          {player.parent_first} {player.parent_last} · {formatPhone(player.phone)}
         </span>
         <span style={{ fontFamily:"Orbitron", fontSize:13, color:C.muted, letterSpacing:1 }}>
           {logCount>0 ? `${logCount} note${logCount>1?"s":""}` : "No activity"}
@@ -355,7 +363,7 @@ function InfoTab({ player }) {
   const elig = player.ncs_eligibility;
   const rows = [
     ["Parent",       `${player.parent_first} ${player.parent_last}`],
-    ["Phone",        player.phone],
+    ["Phone",        formatPhone(player.phone)],
     ["Email",        player.email],
     ["Age",          player.player_age],
     ["DOB",          formatDOB(player.dob)],
@@ -631,6 +639,8 @@ function Portal() {
               );
             })}
           </div>
+
+          
 
           {loading ? (
             <p style={{ fontFamily:"JetBrains Mono", color:C.muted, padding:"40px 0", textAlign:"center" }}>Loading registrations...</p>
