@@ -157,6 +157,11 @@ function formatPhone(raw) {
   return raw; // return as-is if we can't parse it
 }
 
+function shortPosition(pos) {
+  if (!pos) return pos;
+  return pos.trim() === "Utility / Multiple" ? "Utility" : pos.trim();
+}
+
 function statusStyle(label) {
   const s = STATUSES.find(x => x.label===label) || STATUSES[0];
   return { color:s.color, background:s.bg, border:`1px solid ${s.color}44` };
@@ -243,7 +248,7 @@ function PlayerCard({ player, status, logCount, onClick }) {
         <div style={{ flexShrink:0 }}><StatusBadge status={status} /></div>
       </div>
       <p style={{ fontFamily:"JetBrains Mono", fontSize:15, color:C.muted, margin:"0 0 2px" }}>
-        {[...new Set([player.position, player.position2].filter(Boolean))].join(" / ") || "—"}
+        {[...new Set([player.position, player.position2].filter(Boolean).map(shortPosition))].join(" / ") || "—"}
       </p>
       {player.prev_team1 && player.prev_team1.trim().toUpperCase() !== "N/A" && player.prev_team1.trim().toUpperCase() !== "NA" && (
         <p style={{ fontFamily:"JetBrains Mono", fontSize:15, color:C.muted, margin:"0 0 14px" }}>
@@ -257,7 +262,7 @@ function PlayerCard({ player, status, logCount, onClick }) {
       <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:10, alignItems:"center" }}>
         <TeamBadge team={player.team_interest} />
         {elig
-          ? <Tag color={C.mint} text={TEAM_COLORS[elig]?.bg || C.mint}>NCS {elig}</Tag>
+          ? <Tag color={C.white} text={TEAM_COLORS[elig]?.bg || C.mint}>NCS {elig}</Tag>
           : player.dob
             ? <span style={{ fontFamily:"Orbitron", fontSize:13, color:C.muted, letterSpacing:1 }}>...</span>
             : null
@@ -318,10 +323,10 @@ function Drawer({ player, status, log, onClose, onStatusChange, onLogAdd }) {
               </h2>
               <div style={{ display:"flex", gap:8, alignItems:"center", flexWrap:"wrap" }}>
                 <span style={{ fontFamily:"JetBrains Mono", fontSize:15, color:C.muted }}>
-                  {player.position||"—"} · {player.team_interest} Team
+                  {shortPosition(player.position)||"—"} · {player.team_interest} Team
                 </span>
                 {elig && (
-                  <span style={{ background:`${C.mint}18`, border:`1px solid ${C.mint}44`,
+                  <span style={{ background:`${C.dim}44`, border:`1px solid ${C.white}66`,
                     color:TEAM_COLORS[elig]?.bg || C.mint, borderRadius:5, padding:"2px 10px",
                     fontFamily:"Orbitron", fontWeight:700, fontSize:13, letterSpacing:1 }}>
                     NCS Eligible: {elig}
@@ -384,8 +389,8 @@ function InfoTab({ player }) {
     ["Team Applied", player.team_interest],
     ["School",       player.school||"—"],
     ["Grad Year",    player.grad_year||"—"],
-    ["Position",     player.position||"—"],
-    ["2nd Position", player.position2||"—"],
+    ["Position",     shortPosition(player.position)||"—"],
+    ["2nd Position", shortPosition(player.position2)||"—"],
     ["Prev Team 1",  player.prev_team1||"—"],
     ["Prev Team 2",  player.prev_team2||"—"],
     ["Submitted",    player.submitted_at ? new Date(player.submitted_at).toLocaleDateString() : "—"],
