@@ -241,12 +241,17 @@ function PlayerCard({ player, status, logCount, onClick }) {
         </h3>
         <div style={{ flexShrink:0 }}><StatusBadge status={status} /></div>
       </div>
-      <p style={{ fontFamily:"JetBrains Mono", fontSize:15, color:C.muted, margin:"0 0 14px" }}>
-        {[player.position, player.position2].filter(Boolean).join(" / ") || "—"}
-        {player.prev_team1 && player.prev_team1.trim().toUpperCase() !== "N/A" && player.prev_team1.trim().toUpperCase() !== "NA"
-          ? ` · ${player.prev_team1.trim()}`
-          : ""}
+      <p style={{ fontFamily:"JetBrains Mono", fontSize:15, color:C.muted, margin:"0 0 2px" }}>
+        {[...new Set([player.position, player.position2].filter(Boolean))].join(" / ") || "—"}
       </p>
+      {player.prev_team1 && player.prev_team1.trim().toUpperCase() !== "N/A" && player.prev_team1.trim().toUpperCase() !== "NA" && (
+        <p style={{ fontFamily:"JetBrains Mono", fontSize:15, color:C.muted, margin:"0 0 14px" }}>
+          {player.prev_team1.trim()}
+        </p>
+      )}
+      {(!player.prev_team1 || player.prev_team1.trim().toUpperCase() === "N/A" || player.prev_team1.trim().toUpperCase() === "NA") && (
+        <div style={{ marginBottom:14 }} />
+      )}
 
       <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:10, alignItems:"center" }}>
         <TeamBadge team={player.team_interest} />
