@@ -120,7 +120,8 @@ async function fetchAndCacheEligibility(player, onUpdate) {
 
 
 const TEAM_COLORS = {
-  "8U":  { bg:"#f59e0b", border:"#f59e0b" },  // amber
+  "8U":  { bg:"#f59e0b", border:"#f59e0b" },  // amber/orange
+  "9U":  { bg:"#eab308", border:"#eab308" },  // yellow
   "10U": { bg:"#3b82f6", border:"#3b82f6" },  // blue
   "12U": { bg:"#a855f7", border:"#a855f7" },  // purple
   "14U": { bg:"#ef4444", border:"#ef4444" },  // red
@@ -256,7 +257,7 @@ function PlayerCard({ player, status, logCount, onClick }) {
       <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:10, alignItems:"center" }}>
         <TeamBadge team={player.team_interest} />
         {elig
-          ? <Tag color={C.mint}>NCS {elig}</Tag>
+          ? <Tag color={C.mint} text={TEAM_COLORS[elig]?.bg || C.mint}>NCS {elig}</Tag>
           : player.dob
             ? <span style={{ fontFamily:"Orbitron", fontSize:13, color:C.muted, letterSpacing:1 }}>...</span>
             : null
@@ -266,10 +267,15 @@ function PlayerCard({ player, status, logCount, onClick }) {
         )}
       </div>
 
-      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-        <span style={{ fontFamily:"JetBrains Mono", fontSize:15, color:C.muted }}>
-          {player.parent_first} {player.parent_last} · {formatPhone(player.phone)}
-        </span>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-end" }}>
+        <div>
+          <p style={{ fontFamily:"JetBrains Mono", fontSize:15, color:C.muted, margin:0 }}>
+            {player.parent_first} {player.parent_last}
+          </p>
+          <p style={{ fontFamily:"JetBrains Mono", fontSize:15, color:C.muted, margin:"2px 0 0" }}>
+            {formatPhone(player.phone)}
+          </p>
+        </div>
         <span style={{ fontFamily:"Orbitron", fontSize:13, color:C.muted, letterSpacing:1 }}>
           {logCount>0 ? `${logCount} note${logCount>1?"s":""}` : "No activity"}
         </span>
@@ -316,7 +322,7 @@ function Drawer({ player, status, log, onClose, onStatusChange, onLogAdd }) {
                 </span>
                 {elig && (
                   <span style={{ background:`${C.mint}18`, border:`1px solid ${C.mint}44`,
-                    color:C.mint, borderRadius:5, padding:"2px 10px",
+                    color:TEAM_COLORS[elig]?.bg || C.mint, borderRadius:5, padding:"2px 10px",
                     fontFamily:"Orbitron", fontWeight:700, fontSize:13, letterSpacing:1 }}>
                     NCS Eligible: {elig}
                   </span>
