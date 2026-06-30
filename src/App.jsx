@@ -234,17 +234,19 @@ function PlayerCard({ player, status, logCount, onClick }) {
       {needsAction && <div style={{ position:"absolute", top:14, right:14, width:8, height:8,
         borderRadius:"50%", background:C.mint, boxShadow:`0 0 6px ${C.mint}` }} />}
 
-      <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:8, marginBottom:6 }}>
-        <div>
-          <h3 style={{ fontFamily:"Orbitron", fontWeight:700, fontSize:"clamp(15px,3.5vw,18px)", color:C.white, margin:0, lineHeight:1 }}>
-            {player.player_first} {player.player_last}
-          </h3>
-          <p style={{ fontFamily:"JetBrains Mono", fontSize:15, color:C.muted, margin:"3px 0 0" }}>
-            {player.position||"—"}{player.school ? ` · ${player.school}` : ""}
-          </p>
-        </div>
-        <StatusBadge status={status} />
+      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:8, marginBottom:6, flexWrap:"nowrap" }}>
+        <h3 style={{ fontFamily:"Orbitron", fontWeight:700, fontSize:"clamp(14px,3.2vw,18px)", color:C.white,
+          margin:0, lineHeight:1, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", minWidth:0, flex:1 }}>
+          {player.player_first} {player.player_last}
+        </h3>
+        <div style={{ flexShrink:0 }}><StatusBadge status={status} /></div>
       </div>
+      <p style={{ fontFamily:"JetBrains Mono", fontSize:15, color:C.muted, margin:"0 0 14px" }}>
+        {[player.position, player.position2].filter(Boolean).join(" / ") || "—"}
+        {player.prev_team1 && player.prev_team1.trim().toUpperCase() !== "N/A" && player.prev_team1.trim().toUpperCase() !== "NA"
+          ? ` · ${player.prev_team1.trim()}`
+          : ""}
+      </p>
 
       <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:10, alignItems:"center" }}>
         <TeamBadge team={player.team_interest} />
