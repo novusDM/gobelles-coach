@@ -94,12 +94,9 @@ function calcNCSEligibility(dob) {
       cutoff.getMonth() < local.getMonth() ||
       (cutoff.getMonth() === local.getMonth() && cutoff.getDate() < local.getDate());
     if (beforeBirthday) age--;
-    if (age <= 8)  return "8U";
-    if (age <= 10) return "10U";
-    if (age <= 12) return "12U";
-    if (age <= 14) return "14U";
-    if (age <= 16) return "16U";
-    return "18U";
+    if (age < 6) return "6U";
+    if (age > 18) return "18U";
+    return `${age}U`; // exact age division — covers 6U through 18U including odd numbers
   } catch { return null; }
 }
 
@@ -120,11 +117,18 @@ async function fetchAndCacheEligibility(player, onUpdate) {
 
 
 const TEAM_COLORS = {
-  "8U":  { bg:"#f59e0b", border:"#f59e0b" },  // amber/orange
+  "6U":  { bg:"#f0abfc", border:"#f0abfc" },  // light pink
+  "7U":  { bg:"#fb923c", border:"#fb923c" },  // orange
+  "8U":  { bg:"#f59e0b", border:"#f59e0b" },  // amber
   "9U":  { bg:"#eab308", border:"#eab308" },  // yellow
   "10U": { bg:"#3b82f6", border:"#3b82f6" },  // blue
+  "11U": { bg:"#06b6d4", border:"#06b6d4" },  // cyan
   "12U": { bg:"#a855f7", border:"#a855f7" },  // purple
+  "13U": { bg:"#ec4899", border:"#ec4899" },  // pink
   "14U": { bg:"#ef4444", border:"#ef4444" },  // red
+  "15U": { bg:"#f97316", border:"#f97316" },  // orange-red
+  "16U": { bg:"#10b981", border:"#10b981" },  // emerald
+  "18U": { bg:"#6b7280", border:"#6b7280" },  // gray
 };
 
 function TeamBadge({ team, style={} }) {
