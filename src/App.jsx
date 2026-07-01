@@ -124,7 +124,7 @@ const TEAM_COLORS = {
   "10U": { bg:"#3b82f6", border:"#3b82f6" },  // blue
   "11U": { bg:"#06b6d4", border:"#06b6d4" },  // cyan
   "12U": { bg:"#a855f7", border:"#a855f7" },  // purple
-  "13U": { bg:"#ec4899", border:"#ec4899" },  // pink
+  "13U": { bg:"#eab308", border:"#eab308" },  // yellow
   "14U": { bg:"#ef4444", border:"#ef4444" },  // red
   "15U": { bg:"#f97316", border:"#f97316" },  // orange-red
   "16U": { bg:"#10b981", border:"#10b981" },  // emerald
